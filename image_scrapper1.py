@@ -21,3 +21,14 @@ soup = BeautifulSoup(response.content ,'html.parser')
 
 images_tags = soup.find_all("img")
 print(len(images_tags))
+
+img_data_mongo = []
+for idx, i in enumerate(images_tags):
+    image_url = i['src']
+    try:
+        image_data = requests.get(image_url).content
+        img_data_mongo.append({"index": image_url, "image": image_data})
+        with open(os.path.join(save_dir, f"{query}_{idx}.jpg"), "wb") as f:
+            f.write(image_data)
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch {image_url}: {e}")
